@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Auto Sprite Sheet Cutter</title>
+
+<style>
+body{
+    background:#111;
+    color:white;
+    font-family:Arial;
+    text-align:center;
+    padding:20px;
+}
+#preview{
+    display:grid;
+    gap:6px;
+    justify-content:center;
+    margin-top:20px;
+}
+img{
+    border:2px solid #333;
+    width:90px;
+    cursor:pointer;
+}
+button{
+    padding:10px 15px;
+    background:#00eaff;
+    border:none;
+    border-radius:6px;
+    font-weight:bold;
+    margin:10px;
+    cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<h1>🧠 Auto Detector de Sprite Sheets</h1>
+<input type="file" id="upload">
+<br>
+<button onclick="processImage()">Detectar Sprites</button>
+<button onclick="downloadAll()">Descargar Todo</button>
+
+<canvas id="canvas" style="display:none"></canvas>
+<div id="preview"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<script>
+let sprites = [];
+
+function getPixel(data,x,y,width){
+    const i = (y*width + x)*4;
+    return data.slice(i,i+4);
+}
+
+function isEmptyPixel(p){
+    return p[3] < 10 || (p[0]>240 && p[1]>240 && p[2]>240);
+}
+
+function processImage(){
+    const file = upload.files[0];
+    if(!file) return alert("Sube una imagen");
+
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = e => img.src = e.target.result;
+    reader.readAsDataURL(file);
+
+    img.onload = ()=>{
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img,0,0);
+
+        const data = ctx.getImageData(0,0,img.width,img.height).data;
+        const visited = new Array(img.width*img.height).fill(false);
+        const preview = document.getElementById("preview");
+        preview.innerHTML="";
+        sprites=[];
+
+        function floodFill(sx,sy){
+            let stack=[[sx,sy]];
+            let minX=sx,maxX=sx,minY=sy,maxY=sy;
+
+            while(stack.length){
+                const [x,y]=stack.pop();
+                const idx=y*img.width+x;
+                if(x<0||y<0||x>=img.width||y>=img.height||visited[idx]) continue;
+                visited[idx]=true;
+
+                if(isEmptyPixel(getPixel(data,x,y,img.width))) continue;
+
+                minX=Math.min(minX,x);
+                maxX=Math.max(maxX,x);
+                minY=Math.min(minY,y);
+                maxY=Math.max(maxY,y);
+
+                stack.push([x+1,y],[x-1,y],[x,y+1],[x,y-1]);
+            }
+            return {minX,maxX,minY,maxY};
+        }
+
+        for(let y=0;y<img.height;y++){
+            for(let x=0;x<img.width;x++){
+                const idx=y*img.width+x;
+                if(visited[idx]) continue;
+                if(isEmptyPixel(getPixel(data,x,y,img.width))) continue;
+
+                const box=floodFill(x,y);
+                const w=box.maxX-box.minX+1;
+                const h=box.maxY-box.minY+1;
+
+                if(w<10||h<10) continue; // ignora ruido
+
+                const temp=document.createElement("canvas");
+                temp.width=w;
+                temp.height=h;
+                temp.getContext("2d").drawImage(
+                    img,
+                    box.minX,box.minY,w,h,
+                    0,0,w,h
+                );
+
+                const url=temp.toDataURL();
+                sprites.push(url);
+
+                const im=document.createElement("img");
+                im.src=url;
+                im.onclick=()=>{
+                    const a=document.createElement("a");
+                    a.href=url;
+                    a.download="sprite.png";
+                    a.click();
+                }
+                preview.appendChild(im);
+            }
+        }
+
+        preview.style.gridTemplateColumns="repeat(auto-fill, 90px)";
+    }
+}
+
+function downloadAll(){
+    if(!sprites.length) return alert("Primero detecta sprites");
+    const zip=new JSZip();
+    sprites.forEach((s,i)=>{
+        zip.file("sprite_"+i+".png", s.split(',')[1], {base64:true});
+    });
+    zip.generateAsync({type:"blob"}).then(content=>{
+        const a=document.createElement("a");
+        a.href=URL.createObjectURL(content);
+        a.download="sprites.zip";
+        a.click();
+    });
+}
+</script>
+
+</body>
+</html>

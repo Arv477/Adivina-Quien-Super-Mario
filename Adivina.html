@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="Logo.png" type="image/x-icon" />
+<title>Adivina Quién - Mario Bros</title>
+
+<style>
+    body{
+        font-family: Arial, Helvetica, sans-serif;
+        background-image: url(Fondo.png);
+        background-position: 50%;
+        background-repeat: no-repeat;
+        background-size: 120% 120%;
+        margin:0;
+        display:flex;
+        height:100vh;
+        animation: fondoDesliza 30s ease-in-out infinite alternate;
+    }
+
+    h1{margin-top:10px}
+
+    /* GRID PERSONAJES */
+    .grid{
+        width:70%;
+        display:grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px,1fr));
+        gap:12px;
+        padding:20px;
+        overflow-y:auto;
+    }
+
+    .card{
+        background:transparent;
+        border-radius:15px;
+        text-align:center;
+        cursor:pointer;
+        perspective:900px;
+    }
+
+    .card-inner{
+        position:relative;
+        background:rgba(0,0,0,0.5);
+        border-radius:15px;
+        padding:8px;
+        box-shadow:0 5px 10px rgba(0,0,0,0.2);
+        transition:transform 0.5s, box-shadow 0.2s;
+        transform-style:preserve-3d;
+        --flip:0deg;
+        transform:rotateY(var(--flip)) scale(1);
+    }
+
+    .card:hover .card-inner{
+        transform:rotateY(var(--flip)) scale(1.05);
+    }
+
+    .card-face{
+        backface-visibility:hidden;
+    }
+
+    .card-face img{
+        width:80px;
+        height:80px;
+        object-fit:contain;
+    }
+
+    .card-face h3{
+        margin:6px 0 0;
+        font-size:14px;
+        color:#fff;
+    }
+
+    .card-back{
+        position:absolute;
+        inset:0;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        border-radius:15px;
+        background:rgba(0,0,0,0.8);
+        color:#fff;
+        font-weight:bold;
+        letter-spacing:1px;
+        transform:rotateY(180deg);
+    }
+
+    .card.flipped .card-inner{
+        --flip:180deg;
+        box-shadow:0 3px 6px rgba(0,0,0,0.2);
+    }
+
+    /* PANEL SECRETO */
+    .panel{
+        width:30%;
+        background:#222222a2;
+        color:white;
+        text-align:center;
+        padding:20px;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        gap:15px;
+    }
+
+    .secreto{
+        background:white;
+        color:black;
+        padding:20px;
+        border-radius:20px;
+        width:80%;
+    }
+
+    .secreto img{
+        width:150px;
+        height:150px;
+        object-fit:contain;
+    }
+
+    button{
+        padding:10px 20px;
+        border:none;
+        border-radius:10px;
+        font-size:16px;
+        cursor:pointer;
+        background:#ffffff;
+        font-weight:bold;
+    }
+
+    button:hover{ background:#ffe066; }
+
+    @keyframes fondoDesliza{
+        from{ background-position: 100% 50%; }
+        to{ background-position: 0% 50%; }
+    }
+
+    /* Adaptación móvil (Android) */
+    @media (max-width: 900px){
+        body{
+            flex-direction:column;
+            height:auto;
+            min-height:100vh;
+        }
+
+        .grid{
+            width:100%;
+            grid-template-columns: repeat(auto-fit, minmax(110px,1fr));
+            padding:12px;
+            gap:10px;
+            max-height:60vh;
+        }
+
+        .panel{
+            width:100%;
+            order:-1;
+            padding:14px;
+            gap:10px;
+        }
+
+        .secreto{
+            width:90%;
+        }
+
+        .secreto img{
+            width:120px;
+            height:120px;
+        }
+
+        .card-face img{
+            width:70px;
+            height:70px;
+        }
+
+        .card-face h3{
+            font-size:12px;
+        }
+
+        button{
+            width:90%;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="grid" id="grid"></div>
+
+<div class="panel">
+    <h1>Personaje secreto</h1>
+
+    <div class="secreto" id="secreto">
+        <img id="imgSecreta">
+        <h2 id="nombreSecreto"></h2>
+    </div>
+
+    <button onclick="nuevoPersonaje()"> Nuevo personaje</button>
+    <button onclick="ocultarMostrar()"> Ocultar / Mostrar</button>
+</div>
+
+<script>
+const personajes = [
+{nombre:"Baby Mario", img:"Personajes/Baby Mario.png"},
+{nombre:"Baby Luigi", img:"Personajes/Baby luigi.png"},
+{nombre:"Baby Peach", img:"Personajes/Baby peach.png"},
+{nombre:"Baby Daisy", img:"Personajes/Baby Daisy.png"},
+{nombre:"Baby Rosalina", img:"Personajes/Baby rosalina.png"},
+{nombre:"Pochi", img:"Personajes/Pochi.png"},
+{nombre:"Mario", img:"Personajes/Mario.png"},
+{nombre:"Luigi", img:"Personajes/Luigui.png"},
+{nombre:"Peach", img:"Personajes/Peach.png"},
+{nombre:"Daisy", img:"Personajes/Daisy.png"},
+{nombre:"Rosalina", img:"Personajes/Rosalina.png"},
+{nombre:"Pauline", img:"Personajes/Pauline.png"},
+{nombre:"Birdo", img:"Personajes/Birdo.png"},
+{nombre:"Yoshi", img:"Personajes/Yoshy.png"},
+{nombre:"Toad", img:"Personajes/Toad.png"},
+{nombre:"Toadette", img:"Personajes/Toadette.png"},
+{nombre:"Waluigi", img:"Personajes/Waluigi.png"},
+{nombre:"Wario", img:"Personajes/Wario.png"},
+{nombre:"Bowser Jr.", img:"Personajes/Bowser jr.png"},
+{nombre:"Bowser", img:"Personajes/Bowser.png"},
+{nombre:"Kamek", img:"Personajes/Kameek.png"},
+{nombre:"Diddy Kong", img:"Personajes/Didy kong.png"},
+{nombre:"Donkey Kong", img:"Personajes/Donkey kong.png"},
+{nombre:"Funky Kong", img:"Personajes/Funky kong.png"},
+{nombre:"Floruga", img:"Personajes/Floruga.png"},
+{nombre:"Koopa Troopa", img:"Personajes/Koopa.png"},
+{nombre:"Lakitu", img:"Personajes/Lakitu.png"},
+{nombre:"Hammer Bros", img:"Personajes/Hammer Bros.png"},
+{nombre:"Chargin Chuck", img:"Personajes/Chargin chuck.png"},
+{nombre:"Nabbit", img:"Personajes/Nabbit.png"},
+{nombre:"Queen Bee", img:"Personajes/Queen Bee.png"},
+{nombre:"Bomb King", img:"Personajes/Bomb King.png"},
+{nombre:"Monty Mole", img:"Personajes/Monty mole.png"},
+{nombre:"Petey Piranha", img:"Personajes/Petey piraña.png"},
+{nombre:"Shy Guy", img:"Personajes/Shyguy.png"},
+{nombre:"Wendy", img:"Personajes/Wendy.png"},
+{nombre:"Larry", img:"Personajes/Larry.png"},
+{nombre:"Lemmy", img:"Personajes/Lemmy.png"},
+{nombre:"Ludwig", img:"Personajes/Ludwin.png"},
+{nombre:"Roy", img:"Personajes/Roy.png"},
+{nombre:"Morton", img:"Personajes/Morton.png"},
+{nombre:"Iggy", img:"Personajes/Iggy.png"},
+{nombre:"Dry Bones", img:"Personajes/Dry Bones.png"},
+{nombre:"Dry Bowser", img:"Personajes/Dry Bowser.png"},
+{nombre:"King Boo", img:"Personajes/King Boo.png"},
+];
+
+const grid = document.getElementById("grid");
+
+// Crear tarjetas
+personajes.forEach(p => {
+    const card = document.createElement("div");
+    card.className="card";
+    card.innerHTML = `
+        <div class="card-inner">
+            <div class="card-face">
+                <img src="${p.img}" alt="${p.nombre}">
+                <h3>${p.nombre}</h3>
+            </div>
+            <div class="card-face card-back">DESCARTADO</div>
+        </div>
+    `;
+
+    // click para voltear personaje descartado
+    card.onclick = ()=> card.classList.toggle("flipped");
+
+    grid.appendChild(card);
+});
+
+let oculto=false;
+
+function nuevoPersonaje(){
+    const random = personajes[Math.floor(Math.random()*personajes.length)];
+    document.getElementById("imgSecreta").src=random.img;
+    document.getElementById("nombreSecreto").innerText=random.nombre;
+}
+
+function ocultarMostrar(){
+    oculto=!oculto;
+    document.getElementById("imgSecreta").style.visibility = oculto?"hidden":"visible";
+    document.getElementById("nombreSecreto").style.visibility = oculto?"hidden":"visible";
+}
+
+// generar uno al iniciar
+nuevoPersonaje();
+</script>
+
+</body>
+</html>
