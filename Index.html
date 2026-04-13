@@ -78,7 +78,12 @@
         align-items:center;
         justify-content:center;
         border-radius:15px;
-        background:rgba(0,0,0,0.8);
+        background:rgb(0, 0, 0);
+        background-image: url(Bowser.png);
+        background-size: 60% 60%;
+        opacity: 60%;
+        background-repeat: no-repeat;
+        background-position: center;
         color:#fff;
         font-weight:bold;
         letter-spacing:1px;
@@ -93,7 +98,7 @@
     /* PANEL SECRETO */
     .panel{
         width:30%;
-        background:#222222a2;
+        background-color: rgba(0, 0, 0, 0.514);
         color:white;
         text-align:center;
         padding:20px;
@@ -105,16 +110,17 @@
     }
 
     .secreto{
-        background:rgb(255, 255, 255);
+        background-image: url(Personaje2.png);
         color:black;
-        padding:20px;
-        border-radius:20px;
-        width:80%;
+        background-size: cover;
+        background-position: center;
+        padding:30px;
+        width:83%;
     }
 
     .secreto img{
-        width:150px;
-        height:150px;
+        width:100px;
+        height:100px;
         object-fit:contain;
     }
 
@@ -267,7 +273,7 @@ personajes.forEach(p => {
                 <img src="${p.img}" alt="${p.nombre}">
                 <h3>${p.nombre}</h3>
             </div>
-            <div class="card-face card-back">DESCARTADO</div>
+            <div class="card-face card-back"></div>
         </div>
     `;
 
