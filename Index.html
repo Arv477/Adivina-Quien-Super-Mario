@@ -9,7 +9,7 @@
 <style>
     body{
         font-family: Arial, Helvetica, sans-serif;
-        background-image: url(Fondo.png);
+        background-image: url(Fondos/1.png);
         background-position: 50%;
         background-repeat: no-repeat;
         background-size: 120% 120%;
@@ -22,13 +22,25 @@
     h1{margin-top:10px}
 
     /* GRID PERSONAJES */
-    .grid{
+    .grid-wrap{
         width:70%;
+        position:relative;
+    }
+
+    .grid{
+        width:100%;
         display:grid;
         grid-template-columns: repeat(auto-fit, minmax(130px,1fr));
         gap:12px;
         padding:20px;
         overflow-y:auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    
+    .grid::-webkit-scrollbar{
+        width:0;
+        height:0;
     }
 
     .card{
@@ -41,7 +53,7 @@
 
     .card-inner{
         position:relative;
-        background:rgba(0,0,0,0.5);
+        background:rgba(48, 48, 48, 0.658);
         border-radius:15px;
         padding:8px;
         box-shadow:0 5px 10px rgba(0,0,0,0.2);
@@ -97,8 +109,9 @@
 
     /* PANEL SECRETO */
     .panel{
-        width:30%;
-        background-color: rgba(0, 0, 0, 0.514);
+        width:40%;
+        background-color: rgba(36, 36, 36, 0.863);
+        background-size: cover;
         color:white;
         text-align:center;
         padding:20px;
@@ -136,6 +149,124 @@
 
     button:hover{ background:#ffe066; }
 
+    .controls{
+        width:100%;
+        display:flex;
+        flex-direction:column;
+        gap:10px;
+        align-items:center;
+    }
+
+    .control-row{
+        display:flex;
+        flex-wrap:wrap;
+        gap:8px;
+        justify-content:right;
+        width:100%;
+    }
+
+    .control-row label{
+        font-weight:bold;
+    }
+
+    select{
+        padding:8px 10px;
+        border-radius:10px;
+        border:none;
+        font-size:14px;
+        background:#ffd334;
+    }
+    
+    .action-row{
+        display:flex;
+        gap:10px;
+        justify-content:center;
+        width:100%;
+    }
+
+    .timer{
+        font-weight:bold;
+        background:rgba(0,0,0,0.35);
+        padding:8px 12px;
+        border-radius:10px;
+        width:fit-content;
+        display:flex;
+        align-items:center;
+        gap:8px;
+    }
+
+    .timer.hidden{
+        display:none;
+    }
+
+    .timer img{
+        width:22px;
+        height:22px;
+        object-fit:contain;
+    }
+
+    .ads-layer,
+    .bubbles-layer{
+        position:absolute;
+        inset:0;
+        pointer-events:none;
+    }
+
+    .ads-layer{ z-index:5; }
+    .bubbles-layer{ z-index:6; }
+
+    .ad{
+        position:absolute;
+        width:150px;
+        height:150px;
+        background:#fff;
+        border-radius:12px;
+        box-shadow:0 8px 16px rgba(0,0,0,0.35);
+        overflow:hidden;
+        pointer-events:auto;
+    }
+
+    .ad img{
+        width:100%;
+        height:100%;
+        object-fit:cover;
+        display:block;
+    }
+
+    .ad-close{
+        position:absolute;
+        top:-10px;
+        right:-10px;
+        width:28px;
+        height:28px;
+        border-radius:50%;
+        background:#e53935;
+        color:#fff;
+        font-weight:bold;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        border:2px solid #fff;
+        cursor:pointer;
+    }
+
+    .bubble{
+        position:absolute;
+        border-radius:50%;
+        background:rgba(173, 216, 230, 0.45);
+        border:2px solid rgba(255,255,255,0.7);
+        box-shadow:0 4px 10px rgba(0,0,0,0.2);
+        animation:bubbleDrift 6s ease-in-out infinite;
+        pointer-events:auto;
+        cursor:pointer;
+    }
+
+    @keyframes bubbleDrift{
+        0%{ transform:translateY(0) scale(1); }
+        50%{ transform:translateY(-12px) scale(1.03); }
+        100%{ transform:translateY(0) scale(1); }
+    }
+
     @keyframes fondoDesliza{
         from{ background-position: 100% 50%; }
         to{ background-position: 0% 50%; }
@@ -149,6 +280,10 @@
             min-height:100vh;
             background-size: cover;
             background-position: center;
+        }
+
+        .grid-wrap{
+            width:100%;
         }
 
         .grid{
@@ -189,6 +324,14 @@
         button{
             width:90%;
         }
+
+        .control-row{
+            flex-direction:column;
+        }
+
+        .action-row{
+            flex-direction:column;
+        }
     }
 </style>
 </head>
@@ -205,8 +348,31 @@
         <h2 id="nombreSecreto"></h2>
     </div>
 
-    <button onclick="nuevoPersonaje()"> Nuevo personaje</button>
-    <button onclick="ocultarMostrar()"> Ocultar / Mostrar</button>
+    <div class="controls">
+        <div class="timer hidden" id="timer">
+            <img src="Reloj.png" alt="Reloj">
+            <span id="timerText"> 02:00</span>
+        </div>
+
+        <div class="action-row">
+            <button onclick="nuevoPersonaje()"> Nuevo personaje</button>
+            <button onclick="ocultarMostrar()"> Ocultar / Mostrar</button>
+            </div>
+            <div class="control-row">
+                <div class="control-row">
+            <label for="fondoSelect"></label>
+            <select id="fondoSelect"></select>
+        </div>
+            <label for="dificultadSelect"></label>
+            <select id="dificultadSelect">
+                <option value="facil">Facil</option>
+                <option value="normal">Normal</option>
+                <option value="dificil">Dificil</option>
+            </select>
+        </div>
+
+    </div>
+
 </div>
 
 <script>
@@ -235,15 +401,15 @@ const personajes = [
 {nombre:"Diddy Kong", img:"Personajes/Didy kong.png"},
 {nombre:"Donkey Kong", img:"Personajes/Donkey kong.png"},
 {nombre:"Funky Kong", img:"Personajes/Funky kong.png"},
-{nombre:"Floruga", img:"Personajes/Floruga.png"},
+{nombre:"Wiggler", img:"Personajes/Floruga.png"},
 {nombre:"Koopa Troopa", img:"Personajes/Koopa.png"},
 {nombre:"Lakitu", img:"Personajes/Lakitu.png"},
-{nombre:"Hammer Bro", img:"Personajes/Hammer Bros.png"},
+{nombre:"Hammer Bros", img:"Personajes/Hammer Bros.png"},
 {nombre:"Chargin Chuck", img:"Personajes/Chargin Chuck.png"},
 {nombre:"Nabbit", img:"Personajes/Nabbit.png"},
 {nombre:"Honey Queen", img:"Personajes/Queen Bee.png"},
 {nombre:"King Bob-omb", img:"Personajes/Bomb King.png"},
-{nombre:"Monty Mole", img:"Personajes/Monty mole.png"},
+{nombre:"Monty Hole", img:"Personajes/Monty mole.png"},
 {nombre:"Petey Piranha", img:"Personajes/Petey piraña.png"},
 {nombre:"Shy Guy", img:"Personajes/Shyguy.png"},
 {nombre:"Wendy", img:"Personajes/Wendy.png"},
@@ -258,35 +424,161 @@ const personajes = [
 {nombre:"King Boo", img:"Personajes/King Boo.png"},
 {nombre:"Boo", img:"Personajes/Boo.png"},
 {nombre:"Goomba", img:"Personajes/Goomba.png"},
-{nombre:"Pom Pom", img:"Personajes/Pom Pom.png"}
+{nombre:"Pom Pom", img:"Personajes/Pom Pom.png"},
+{nombre:"Bob-omb", img:"Personajes/Bob-bomb.png"},
+{nombre:"Sea urchin", img:"Personajes/Pinchos.png"},
+{nombre:"Cheep Cheep", img:"Personajes/Cheep-cheep.png"},
+{nombre:"Whomp", img:"Personajes/Whomp.png"},
+{nombre:"Twomp", img:"Personajes/Twomp.png"},
+{nombre:"Spike", img:"Personajes/Spike.png"},
+{nombre:"Penguin", img:"Personajes/Penguin.png"},
+{nombre:"Peepa", img:"Personajes/Peepa.png"},
+{nombre:"Paratroopa", img:"Personajes/Paratroopa.png"},
+{nombre:"Ninji", img:"Personajes/Ninji.png"},
+{nombre:"Fuzzy", img:"Personajes/Fuzzy.png"},
+{nombre:"Bullet Bill", img:"Personajes/Bullet Bill.png"},
+{nombre:"Broozer", img:"Personajes/Broozer.png"},
+{nombre:"Ant Trooper", img:"Personajes/Ant Trooper.png"},
+{nombre:"Blooper", img:"Personajes/Blooper.png"},
+{nombre:"Chain Chomp", img:"Personajes/Chain Chomp.png"},
+{nombre:"Para-Biddybud", img:"Personajes/Para-Biddybud.png"},
+{nombre:"Pirahna Plant", img:"Personajes/Pirahna Plant.png"},
+{nombre:"Luma", img:"Personajes/Luma.png"}
 ];
 
 const grid = document.getElementById("grid");
+const fondoSelect = document.getElementById("fondoSelect");
+const dificultadSelect = document.getElementById("dificultadSelect");
+const dificultadCantidad = {
+    facil: 24,
+    normal: 48,
+    dificil: personajes.length
+};
+const fondos = [
+    "Fondos/1.png","Fondos/2.png","Fondos/3.png","Fondos/4.png",
+    "Fondos/5.png","Fondos/6.png","Fondos/7.png","Fondos/8.png",
+    "Fondos/9.png","Fondos/10.png","Fondos/11.png","Fondos/12.png",
+    "Fondos/13.png","Fondos/14.png","Fondos/15.png","Fondos/16.png",
+    "Fondos/17.png","Fondos/18.png","Fondos/19.png","Fondos/20.png",
+];
 
-// Crear tarjetas
-personajes.forEach(p => {
-    const card = document.createElement("div");
-    card.className="card";
-    card.innerHTML = `
-        <div class="card-inner">
-            <div class="card-face">
-                <img src="${p.img}" alt="${p.nombre}">
-                <h3>${p.nombre}</h3>
+let personajesActivos = [];
+let dificultadActual = "dificil";
+let flippedNombres = new Set();
+let timerInterval = null;
+let secondsLeft = 120;
+
+function renderGrid(){
+    grid.innerHTML = "";
+    personajesActivos.forEach(p => {
+        const card = document.createElement("div");
+        card.className="card";
+        if(flippedNombres.has(p.nombre)){
+            card.classList.add("flipped");
+        }
+        card.innerHTML = `
+            <div class="card-inner">
+                <div class="card-face">
+                    <img src="${p.img}" alt="${p.nombre}">
+                    <h3>${p.nombre}</h3>
+                </div>
+                <div class="card-face card-back"></div>
             </div>
-            <div class="card-face card-back"></div>
-        </div>
-    `;
+        `;
 
-    // click para voltear personaje descartado
-    card.onclick = ()=> card.classList.toggle("flipped");
+        // click para voltear personaje descartado
+        card.onclick = ()=> {
+            card.classList.toggle("flipped");
+            if(card.classList.contains("flipped")){
+                flippedNombres.add(p.nombre);
+            }else{
+                flippedNombres.delete(p.nombre);
+            }
+        };
 
-    grid.appendChild(card);
-});
+        grid.appendChild(card);
+    });
+}
+
+function updateTimerUI(){
+    const timerText = document.getElementById("timerText");
+    const minutos = String(Math.floor(secondsLeft / 60)).padStart(2,"0");
+    const segundos = String(secondsLeft % 60).padStart(2,"0");
+    if(timerText){
+        timerText.textContent = ` ${minutos}:${segundos}`;
+    }
+}
+
+function mezclarPersonajes(){
+    for(let i = personajesActivos.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [personajesActivos[i], personajesActivos[j]] = [personajesActivos[j], personajesActivos[i]];
+    }
+    renderGrid();
+}
+
+function iniciarCronometroSiAplica(){
+    const timerEl = document.getElementById("timer");
+    const aplica = (dificultadActual === "normal" || dificultadActual === "dificil");
+    if(timerInterval){
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+    if(!aplica){
+        timerEl.classList.add("hidden");
+        return;
+    }
+
+    secondsLeft = 120;
+    updateTimerUI();
+    timerEl.classList.remove("hidden");
+
+    timerInterval = setInterval(() => {
+        secondsLeft--;
+        if(secondsLeft <= 0){
+            mezclarPersonajes();
+            secondsLeft = 120;
+        }
+        updateTimerUI();
+    }, 1000);
+}
+
+function setDificultad(nivel){
+    dificultadActual = nivel;
+    const cantidad = dificultadCantidad[nivel];
+    personajesActivos = personajes.slice(0, cantidad);
+    flippedNombres = new Set();
+    renderGrid();
+    nuevoPersonaje();
+    iniciarCronometroSiAplica();
+}
+
+function cargarFondos(){
+    fondos.forEach((ruta, index) => {
+        const option = document.createElement("option");
+        option.value = ruta;
+        option.textContent = `Fondo ${index + 1}`;
+        fondoSelect.appendChild(option);
+    });
+
+    fondoSelect.onchange = () => {
+        document.body.style.backgroundImage = `url(${fondoSelect.value})`;
+    };
+
+    const fondoInicial = fondos[0];
+    fondoSelect.value = fondoInicial;
+    document.body.style.backgroundImage = `url(${fondoInicial})`;
+}
 
 let oculto=false;
 
 function nuevoPersonaje(){
-    const random = personajes[Math.floor(Math.random()*personajes.length)];
+    if(personajesActivos.length === 0){
+        document.getElementById("imgSecreta").removeAttribute("src");
+        document.getElementById("nombreSecreto").innerText="";
+        return;
+    }
+    const random = personajesActivos[Math.floor(Math.random()*personajesActivos.length)];
     document.getElementById("imgSecreta").src=random.img;
     document.getElementById("nombreSecreto").innerText=random.nombre;
 }
@@ -298,7 +590,12 @@ function ocultarMostrar(){
 }
 
 // generar uno al iniciar
-nuevoPersonaje();
+cargarFondos();
+setDificultad("facil");
+dificultadSelect.value = "facil";
+dificultadSelect.addEventListener("change", () => {
+    setDificultad(dificultadSelect.value);
+});
 </script>
 
 </body>
