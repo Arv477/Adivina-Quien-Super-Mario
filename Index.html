@@ -122,6 +122,14 @@
         gap:15px;
     }
 
+    .panel-top{
+        width:100%;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        gap:10px;
+    }
+
     .secreto{
         background-image: url(Personaje2.png);
         color:black;
@@ -148,6 +156,13 @@
     }
 
     button:hover{ background:#ffe066; }
+
+    .mobile-secret-toggle{
+        display:none;
+        width:auto;
+        padding:8px 12px;
+        font-size:14px;
+    }
 
     .controls{
         width:100%;
@@ -302,9 +317,24 @@
             justify-content:flex-start;
         }
 
+        .panel-top{
+            justify-content:space-between;
+        }
+
+        .panel-top h1{
+            margin:0;
+            font-size:22px;
+        }
+
         .secreto{
             width:90%;
             order:-1;
+        }
+
+        .mobile-secret-toggle{
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
         }
 
         .secreto img{
@@ -332,6 +362,29 @@
         .action-row{
             flex-direction:column;
         }
+
+        body.mobile-secret-collapsed .grid{
+            max-height:92vh;
+        }
+
+        body.mobile-secret-collapsed .panel{
+            padding:8px 14px;
+            gap:0;
+            min-height:auto;
+        }
+
+        body.mobile-secret-collapsed .panel-top{
+            justify-content:flex-end;
+        }
+
+        body.mobile-secret-collapsed .panel-top h1{
+            display:none;
+        }
+
+        body.mobile-secret-collapsed .secreto,
+        body.mobile-secret-collapsed .controls{
+            display:none;
+        }
     }
 </style>
 </head>
@@ -341,7 +394,10 @@
 <div class="grid" id="grid"></div>
 
 <div class="panel">
-    <h1>Personaje secreto</h1>
+    <div class="panel-top">
+        <h1>Personaje secreto</h1>
+        <button id="mobileSecretToggle" class="mobile-secret-toggle" onclick="toggleSecretMobile()">Esconder</button>
+    </div>
 
     <div class="secreto" id="secreto">
         <img id="imgSecreta">
@@ -384,6 +440,7 @@ const personajes = [
 {nombre:"Baby Peach", img:"Personajes/Baby peach.png"},
 {nombre:"Baby Daisy", img:"Personajes/Baby Daisy.png"},
 {nombre:"Baby Rosalina", img:"Personajes/Baby rosalina.png"},
+{nombre:"Luma", img:"Personajes/Luma.png"},
 {nombre:"Mario", img:"Personajes/Mario.png"},
 {nombre:"Luigi", img:"Personajes/Luigui.png"},
 {nombre:"Peach", img:"Personajes/Peach.png"},
@@ -412,14 +469,14 @@ const personajes = [
 {nombre:"King Bob-omb", img:"Personajes/Bomb King.png"},
 {nombre:"Monty Hole", img:"Personajes/Monty mole.png"},
 {nombre:"Petey Piranha", img:"Personajes/Petey piraña.png"},
-{nombre:"Iggy", img:"Personajes/Iggy.png"},
+{nombre:"Shy Guy", img:"Personajes/Shyguy.png"},
 {nombre:"Wendy", img:"Personajes/Wendy.png"},
 {nombre:"Larry", img:"Personajes/Larry.png"},
 {nombre:"Lemmy", img:"Personajes/Lemmy.png"},
 {nombre:"Ludwig", img:"Personajes/Ludwin.png"},
 {nombre:"Roy", img:"Personajes/Roy.png"},
 {nombre:"Morton", img:"Personajes/Morton.png"},
-{nombre:"Shy Guy", img:"Personajes/Shyguy.png"},
+{nombre:"Iggy", img:"Personajes/Iggy.png"},
 {nombre:"Dry Bones", img:"Personajes/Dry Bones.png"},
 {nombre:"Dry Bowser", img:"Personajes/Dry Bowser.png"},
 {nombre:"King Boo", img:"Personajes/King Boo.png"},
@@ -451,7 +508,7 @@ const personajes = [
 {nombre:"Cappy", img:"Personajes/Cappy.png"},
 {nombre:"Poochy", img:"Personajes/Pochi.png"},
 {nombre:"FLUDD", img:"Personajes/FLUDD.png"},
-{nombre:"Luma", img:"Personajes/Luma.png"}
+{nombre:"Pianta", img:"Personajes/Pianta.png"}
 ];
 
 const personajesSmash = [
@@ -532,6 +589,7 @@ const grid = document.getElementById("grid");
 const fondoSelect = document.getElementById("fondoSelect");
 const dificultadSelect = document.getElementById("dificultadSelect");
 const startTimerBtn = document.getElementById("startTimerBtn");
+const mobileSecretToggle = document.getElementById("mobileSecretToggle");
 const dificultadCantidad = {
     facil: 24,
     normal: 48,
@@ -702,6 +760,13 @@ function ocultarMostrar(){
     oculto=!oculto;
     document.getElementById("imgSecreta").style.visibility = oculto?"hidden":"visible";
     document.getElementById("nombreSecreto").style.visibility = oculto?"hidden":"visible";
+}
+
+function toggleSecretMobile(){
+    const estaOculto = document.body.classList.toggle("mobile-secret-collapsed");
+    if(mobileSecretToggle){
+        mobileSecretToggle.textContent = estaOculto ? "Mostrar" : "Esconder";
+    }
 }
 
 function reiniciarJuego(){
