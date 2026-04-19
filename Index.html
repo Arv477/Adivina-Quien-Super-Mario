@@ -109,7 +109,7 @@
 
     /* PANEL SECRETO */
     .panel{
-        width:40%;
+        width:35%;
         background-color: rgba(36, 36, 36, 0.863);
         background-size: cover;
         color:white;
@@ -128,12 +128,12 @@
         background-size: cover;
         background-position: center;
         padding:30px;
-        width:83%;
+        width:84%;
     }
 
     .secreto img{
-        width:100px;
-        height:100px;
+        width:120px;
+        height:120px;
         object-fit:contain;
     }
 
@@ -351,15 +351,16 @@
     <div class="controls">
         <div class="timer hidden" id="timer">
             <img src="Reloj.png" alt="Reloj">
-            <span id="timerText"> 02:00</span>
+            <span id="timerText"> 03:00</span>
         </div>
 
         <div class="action-row">
             <button onclick="nuevoPersonaje()"> Nuevo personaje</button>
-            <button onclick="ocultarMostrar()"> Ocultar / Mostrar</button>
-            </div>
+            <button onclick="reiniciarJuego()"> Reiniciar cartas</button>
+            <button id="startTimerBtn" onclick="iniciarCronometro()"> Empezar cronometro</button>
+        </div>
+        <div class="control-row">
             <div class="control-row">
-                <div class="control-row">
             <label for="fondoSelect"></label>
             <select id="fondoSelect"></select>
         </div>
@@ -368,6 +369,7 @@
                 <option value="facil">Facil</option>
                 <option value="normal">Normal</option>
                 <option value="dificil">Dificil</option>
+                <option value="smash">Smash</option>
             </select>
         </div>
 
@@ -382,7 +384,6 @@ const personajes = [
 {nombre:"Baby Peach", img:"Personajes/Baby peach.png"},
 {nombre:"Baby Daisy", img:"Personajes/Baby Daisy.png"},
 {nombre:"Baby Rosalina", img:"Personajes/Baby rosalina.png"},
-{nombre:"Poochy", img:"Personajes/Pochi.png"},
 {nombre:"Mario", img:"Personajes/Mario.png"},
 {nombre:"Luigi", img:"Personajes/Luigui.png"},
 {nombre:"Peach", img:"Personajes/Peach.png"},
@@ -411,19 +412,21 @@ const personajes = [
 {nombre:"King Bob-omb", img:"Personajes/Bomb King.png"},
 {nombre:"Monty Hole", img:"Personajes/Monty mole.png"},
 {nombre:"Petey Piranha", img:"Personajes/Petey piraña.png"},
-{nombre:"Shy Guy", img:"Personajes/Shyguy.png"},
+{nombre:"Iggy", img:"Personajes/Iggy.png"},
 {nombre:"Wendy", img:"Personajes/Wendy.png"},
 {nombre:"Larry", img:"Personajes/Larry.png"},
 {nombre:"Lemmy", img:"Personajes/Lemmy.png"},
 {nombre:"Ludwig", img:"Personajes/Ludwin.png"},
 {nombre:"Roy", img:"Personajes/Roy.png"},
 {nombre:"Morton", img:"Personajes/Morton.png"},
-{nombre:"Iggy", img:"Personajes/Iggy.png"},
+{nombre:"Shy Guy", img:"Personajes/Shyguy.png"},
 {nombre:"Dry Bones", img:"Personajes/Dry Bones.png"},
 {nombre:"Dry Bowser", img:"Personajes/Dry Bowser.png"},
 {nombre:"King Boo", img:"Personajes/King Boo.png"},
 {nombre:"Boo", img:"Personajes/Boo.png"},
 {nombre:"Goomba", img:"Personajes/Goomba.png"},
+{nombre:"Goombette", img:"Personajes/Goombette.png"},
+{nombre:"Bom Bom", img:"Personajes/Bom Bom.png"},
 {nombre:"Pom Pom", img:"Personajes/Pom Pom.png"},
 {nombre:"Bob-omb", img:"Personajes/Bob-bomb.png"},
 {nombre:"Sea urchin", img:"Personajes/Pinchos.png"},
@@ -443,16 +446,97 @@ const personajes = [
 {nombre:"Chain Chomp", img:"Personajes/Chain Chomp.png"},
 {nombre:"Para-Biddybud", img:"Personajes/Para-Biddybud.png"},
 {nombre:"Pirahna Plant", img:"Personajes/Pirahna Plant.png"},
+{nombre:"Toadsworth", img:"Personajes/Toadsworth.png"},
+{nombre:"Profesor Fessor", img:"Personajes/Profesor Fessor.png"},
+{nombre:"Cappy", img:"Personajes/Cappy.png"},
+{nombre:"Poochy", img:"Personajes/Pochi.png"},
+{nombre:"FLUDD", img:"Personajes/FLUDD.png"},
 {nombre:"Luma", img:"Personajes/Luma.png"}
+];
+
+const personajesSmash = [
+{nombre:"Mario", img:"Smash/Mario.png"},
+{nombre:"Donkey Kong", img:"Smash/Donkey Kong.png"},
+{nombre:"Link", img:"Smash/Link.png"},
+{nombre:"Samus", img:"Smash/Samus.png"},
+{nombre:"Yoshi", img:"Smash/Yoshy.png"},
+{nombre:"Kirby", img:"Smash/Kirbi.png"},
+{nombre:"Fox", img:"Smash/Fox.png"},
+{nombre:"Pikachu", img:"Smash/Pikachu.png"},
+{nombre:"Luigi", img:"Smash/Luigi.png"},
+{nombre:"Ness", img:"Smash/Ness.png"},
+{nombre:"Aldeano", img:"Smash/Aldeano.png"},
+{nombre:"Bayonetta", img:"Smash/Bayonetta_01.png"},
+{nombre:"Capitan Falcon", img:"Smash/Capitan Falcon.png"},
+{nombre:"Charizard", img:"Smash/Charizard.png"},
+{nombre:"Cloud", img:"Smash/cloud.png"},
+{nombre:"Corrin", img:"Smash/Corrin.png"},
+{nombre:"Diddy Kong", img:"Smash/Diddy kong.png"},
+{nombre:"Dr. Mario", img:"Smash/Dr.Mario.png"},
+{nombre:"Duck Hunt", img:"Smash/Duck Hunt.png"},
+{nombre:"Entrenador Wii Fit", img:"Smash/Entrenador wii fit.png"},
+{nombre:"Entrenadora Wii Fit", img:"Smash/Entrenadora Wii fit.png"},
+{nombre:"Roy Espadachin", img:"Smash/Espadachin roy.png"},
+{nombre:"Falco", img:"Smash/Falco.png"},
+{nombre:"Ganondorf", img:"Smash/Ganondorf.png"},
+{nombre:"Greninja", img:"Smash/Greninja.png"},
+{nombre:"Bowser", img:"Smash/Bowser.png"},
+{nombre:"Bowser Jr.", img:"Smash/Bowser Jr.png"},
+{nombre:"Iggy", img:"Smash/Iggy.png"},
+{nombre:"Larry", img:"Smash/Larry.png"},
+{nombre:"Lemmy", img:"Smash/Lemmy.png"},
+{nombre:"Ludwig", img:"Smash/Ludwing.png"},
+{nombre:"Morton", img:"Smash/Morton.png"},
+{nombre:"Roy", img:"Smash/Roy.png"},
+{nombre:"Wendy", img:"Smash/Wendy.png"},
+{nombre:"Ike", img:"Smash/Ike.png"},
+{nombre:"Jigglypuff", img:"Smash/Jigglypuff.png"},
+{nombre:"Little Mac", img:"Smash/Littlemac.png"},
+{nombre:"Lucario", img:"Smash/Lucario.png"},
+{nombre:"Lucas", img:"Smash/Lucas.png"},
+{nombre:"Lucina", img:"Smash/Lucina.png"},
+{nombre:"Marth", img:"Smash/Marth.png"},
+{nombre:"Master Hand", img:"Smash/master hand.png"},
+{nombre:"Mega Man", img:"Smash/Megaman.png"},
+{nombre:"Meta Knight", img:"Smash/Metaknight.png"},
+{nombre:"Mewtwo", img:"Smash/Mewtwo.png"},
+{nombre:"Mr. Game and Watch", img:"Smash/Mr. Game and Watch.png"},
+{nombre:"Olimar", img:"Smash/Olimar.png"},
+{nombre:"Pac-Man", img:"Smash/Pacman.png"},
+{nombre:"Palutena", img:"Smash/Palutena.png"},
+{nombre:"Peach", img:"Smash/Peach.png"},
+{nombre:"Daisy", img:"Smash/Daisy.png"},
+{nombre:"Rosalina", img:"Smash/Rosalina.png"},
+{nombre:"Pit Oscuro", img:"Smash/Pit oscuro.png"},
+{nombre:"Pit", img:"Smash/Pit.png"},
+{nombre:"R.O.B.", img:"Smash/R.O.B.png"},
+{nombre:"Rey Dedede", img:"Smash/Rey dedede_01.png"},
+{nombre:"Robin", img:"Smash/Robin.png"},
+{nombre:"Ryu", img:"Smash/Ryu.png"},
+{nombre:"Sheik", img:"Smash/Sheik.png"},
+{nombre:"Shulk", img:"Smash/Shulk.png"},
+{nombre:"Sonic", img:"Smash/Sonic.png"},
+{nombre:"Toon Link", img:"Smash/Toon Link¿.png"},
+{nombre:"Wario", img:"Smash/Wario.png"},
+{nombre:"Zelda", img:"Smash/Zelda.png"},
+{nombre:"Pichu", img:"Smash/Pichu.png"},
+{nombre:"Canelita", img:"Smash/Canelita.png"},
+{nombre:"Insineroar", img:"Smash/Insineroar.png"},
+{nombre:"Inkling girl", img:"Smash/Inkling girl.png"},
+{nombre:"Inkling boy", img:"Smash/Inkling boy.png"},
+{nombre:"Ice climbers", img:"Smash/Ice climbers.png"},
+{nombre:"Mii", img:"Smash/Mii.png"},
 ];
 
 const grid = document.getElementById("grid");
 const fondoSelect = document.getElementById("fondoSelect");
 const dificultadSelect = document.getElementById("dificultadSelect");
+const startTimerBtn = document.getElementById("startTimerBtn");
 const dificultadCantidad = {
     facil: 24,
     normal: 48,
-    dificil: personajes.length
+    dificil: personajes.length,
+    smash: personajesSmash.length
 };
 const fondos = [
     "Fondos/1.png","Fondos/2.png","Fondos/3.png","Fondos/4.png",
@@ -466,7 +550,7 @@ let personajesActivos = [];
 let dificultadActual = "dificil";
 let flippedNombres = new Set();
 let timerInterval = null;
-let secondsLeft = 120;
+let secondsLeft = 180;
 
 function renderGrid(){
     grid.innerHTML = "";
@@ -509,6 +593,35 @@ function updateTimerUI(){
     }
 }
 
+function getDuracionCronometro(){
+    return 180;
+}
+
+function actualizarBotonCronometro(){
+    if(!startTimerBtn){
+        return;
+    }
+    const aplica = (dificultadActual === "normal" || dificultadActual === "dificil" || dificultadActual === "smash");
+    startTimerBtn.style.display = aplica ? "inline-flex" : "none";
+    startTimerBtn.disabled = !!timerInterval;
+}
+
+function resetTimer(){
+    if(timerInterval){
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+    secondsLeft = getDuracionCronometro();
+    updateTimerUI();
+
+    const timerEl = document.getElementById("timer");
+    const aplica = (dificultadActual === "normal" || dificultadActual === "dificil" || dificultadActual === "smash");
+    if(timerEl){
+        timerEl.classList.toggle("hidden", !aplica);
+    }
+    actualizarBotonCronometro();
+}
+
 function mezclarPersonajes(){
     for(let i = personajesActivos.length - 1; i > 0; i--){
         const j = Math.floor(Math.random() * (i + 1));
@@ -517,27 +630,28 @@ function mezclarPersonajes(){
     renderGrid();
 }
 
-function iniciarCronometroSiAplica(){
+function iniciarCronometro(){
     const timerEl = document.getElementById("timer");
-    const aplica = (dificultadActual === "normal" || dificultadActual === "dificil");
-    if(timerInterval){
-        clearInterval(timerInterval);
-        timerInterval = null;
-    }
+    const aplica = (dificultadActual === "normal" || dificultadActual === "dificil" || dificultadActual === "smash");
     if(!aplica){
         timerEl.classList.add("hidden");
+        actualizarBotonCronometro();
+        return;
+    }
+    if(timerInterval){
         return;
     }
 
-    secondsLeft = 120;
+    secondsLeft = getDuracionCronometro();
     updateTimerUI();
     timerEl.classList.remove("hidden");
+    actualizarBotonCronometro();
 
     timerInterval = setInterval(() => {
         secondsLeft--;
         if(secondsLeft <= 0){
             mezclarPersonajes();
-            secondsLeft = 120;
+            secondsLeft = getDuracionCronometro();
         }
         updateTimerUI();
     }, 1000);
@@ -546,11 +660,12 @@ function iniciarCronometroSiAplica(){
 function setDificultad(nivel){
     dificultadActual = nivel;
     const cantidad = dificultadCantidad[nivel];
-    personajesActivos = personajes.slice(0, cantidad);
+    const basePersonajes = nivel === "smash" ? personajesSmash : personajes;
+    personajesActivos = basePersonajes.slice(0, cantidad);
     flippedNombres = new Set();
     renderGrid();
     nuevoPersonaje();
-    iniciarCronometroSiAplica();
+    resetTimer();
 }
 
 function cargarFondos(){
@@ -587,6 +702,16 @@ function ocultarMostrar(){
     oculto=!oculto;
     document.getElementById("imgSecreta").style.visibility = oculto?"hidden":"visible";
     document.getElementById("nombreSecreto").style.visibility = oculto?"hidden":"visible";
+}
+
+function reiniciarJuego(){
+    flippedNombres = new Set();
+    oculto = false;
+    document.getElementById("imgSecreta").style.visibility = "visible";
+    document.getElementById("nombreSecreto").style.visibility = "visible";
+    renderGrid();
+    nuevoPersonaje();
+    resetTimer();
 }
 
 // generar uno al iniciar
